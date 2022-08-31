@@ -38,6 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites', 
+
+
+    # Third-party
+    'crispy_forms',
+    'allauth',
+    'allauth.account',
+
 
     # local
     'users.apps.UsersConfig',
@@ -53,6 +61,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+# django-crispy-forms
+CRISPY_TEMPLATE_PACK = 'bootstrap4' # new
+
 
 ROOT_URLCONF = 'sahha_service.urls'
 
@@ -147,4 +160,14 @@ LOGIN_REDIRECT_URL = 'home'
 
 LOGOUT_REDIRECT_URL = 'home' # new
 
+
+SITE_ID = 1
+
+
+AUTHENTICATION_BACKENDS = (
+'django.contrib.auth.backends.ModelBackend',
+'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # new
 
