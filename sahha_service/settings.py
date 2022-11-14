@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites', 
+    'django.contrib.sites',
 
 
     # Third-party
@@ -64,7 +64,7 @@ MIDDLEWARE = [
 
 
 # django-crispy-forms
-CRISPY_TEMPLATE_PACK = 'bootstrap4' # new
+CRISPY_TEMPLATE_PACK = 'bootstrap4'  # new
 
 
 ROOT_URLCONF = 'sahha_service.urls'
@@ -72,7 +72,7 @@ ROOT_URLCONF = 'sahha_service.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], # new
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # new
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -101,14 +101,16 @@ DATABASES = {
 """
 
 DATABASES = {
-'default': {
-'ENGINE': 'django.db.backends.postgresql',
-'NAME': 'sahha',
-'USER': 'postgres',
-'PASSWORD': 'pass',
-'HOST': '127.0.0.1',
-'PORT': 5432
-}
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'sahha',
+        'USER': 'postgres',
+        # 'PASSWORD': 'pass',
+        'PASSWORD': 'postgres',
+        'HOST': '127.0.0.1',
+        # 'HOST': 'localhost',
+        'PORT': 5432
+    }
 }
 
 
@@ -154,20 +156,19 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-AUTH_USER_MODEL = 'users.User' 
+AUTH_USER_MODEL = 'users.User'
 
 LOGIN_REDIRECT_URL = 'home'
 
-LOGOUT_REDIRECT_URL = 'home' # new
+LOGOUT_REDIRECT_URL = 'home'  # new
 
 
 SITE_ID = 1
 
 
 AUTHENTICATION_BACKENDS = (
-'django.contrib.auth.backends.ModelBackend',
-'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # new
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # new
