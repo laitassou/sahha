@@ -15,11 +15,9 @@ django-crispy-forms==1.14.0
 django-environ==0.9.0
 django-extensions==3.2.1
 django-filter==22.1
-django-silk==5.0.2
 djangorestframework==3.14.0
 djangorestframework-api-key==2.2.0
 djangorestframework-simplejwt==5.2.2
-drf-spectacular==0.24.1
 drf-yasg==1.21.4
 gprof2dot==2022.7.29
 gunicorn==20.1.0
