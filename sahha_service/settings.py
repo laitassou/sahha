@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 from pathlib import Path
+from _datetime import timedelta
+from sahha_service.utils.constants import GENERAL
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,14 +44,21 @@ INSTALLED_APPS = [
 
 
     # Third-party
-    'crispy_forms',
-    'allauth',
-    'allauth.account',
+    'drf_yasg',
+    # 'crispy_forms',
+    'corsheaders',
+    "rest_framework",
+    'sahha_service',
+    'rest_framework_api_key',
+    'django_extensions',
+    'django_filters',
+    # 'allauth',
+    # 'allauth.account',
 
-
-    # local
-    'users.apps.UsersConfig',
-    'pages.apps.PagesConfig',
+    # Apps
+    'sahha_service.apps.api',
+    # 'sahha_service.apps.users',
+    # 'sahha_service.apps.api',
 ]
 
 MIDDLEWARE = [
@@ -65,7 +74,6 @@ MIDDLEWARE = [
 
 # django-crispy-forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'  # new
-
 
 ROOT_URLCONF = 'sahha_service.urls'
 
@@ -135,38 +143,92 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
+# https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
+
+    'DATETIME_FORMAT': GENERAL.DATETIME_FORMAT,
+    'DATE_FORMAT': GENERAL.DATE_FORMAT,
+    'DATE_INPUT_FORMATS': [GENERAL.DATE_FORMAT],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    # 'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+        # "rest_framework_api_key.permissions.HasAPIKey",
+    ],
+    # 'EXCEPTION_HANDLER': 'sahha_service.utils.exception_handler.rest_exception_handler',
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'sahha_service.utils.middlewares.CustomJWTAuthentication',
+    # ),
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework.authentication.SessionAuthentication',
+    #     'rest_framework.authentication.BasicAuthentication'
+    # ),
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Basic': {
+            'type': 'basic'
+        },
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-AUTH_USER_MODEL = 'users.User'
+# AUTH_USER_MODEL = 'sahha_service.SahhaUser'
 
-LOGIN_REDIRECT_URL = 'home'
+# LOGIN_REDIRECT_URL = 'home'
 
-LOGOUT_REDIRECT_URL = 'home'  # new
+# LOGOUT_REDIRECT_URL = 'home'  # new
 
 
 SITE_ID = 1
 
 
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.ModelBackend',
+#     'allauth.account.auth_backends.AuthenticationBackend',
+# )
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.AllowAllUsersModelBackend']
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # new
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=12),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+    'ROTATE_REFRESH_TOKENS': True,
+}
