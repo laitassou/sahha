@@ -188,6 +188,11 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
         # "rest_framework_api_key.permissions.HasAPIKey",
     ],
+    #'DEFAULT_AUTHENTICATION_CLASSES': (
+    #    ...
+    #    'rest_framework_simplejwt.authentication.JWTAuthentication',
+    #)
+    
     # 'EXCEPTION_HANDLER': 'sahha_service.utils.exception_handler.rest_exception_handler',
     # 'DEFAULT_AUTHENTICATION_CLASSES': (
     #     'sahha_service.utils.middlewares.CustomJWTAuthentication',
