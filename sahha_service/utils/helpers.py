@@ -60,8 +60,7 @@ def dict_filter_validate(data, *args, fix_args=False):
 
         if len(missings[list_index]) == 0:
             return filtered_data[list_index]
-
-    raise exceptions.missingFields(missings)
+    raise exceptions.CustomException.missingFields(missings)
 
 def dict_filter(data, *args):
     args = fix_search_args(data, *args)
