@@ -15,6 +15,11 @@ from pathlib import Path
 from _datetime import timedelta
 from sahha_service.utils.constants import GENERAL
 
+if os.name == 'nt':
+    VENV_BASE = os.environ['VIRTUAL_ENV']
+    os.environ['PATH'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo') + ';' + os.environ['PATH']
+    os.environ['PROJ_LIB'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo\\data\\proj') + ';' + os.environ['PATH']
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -69,8 +74,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]
 
 # django-crispy-forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'  # new
@@ -178,6 +188,11 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
         # "rest_framework_api_key.permissions.HasAPIKey",
     ],
+    #'DEFAULT_AUTHENTICATION_CLASSES': (
+    #    ...
+    #    'rest_framework_simplejwt.authentication.JWTAuthentication',
+    #)
+    
     # 'EXCEPTION_HANDLER': 'sahha_service.utils.exception_handler.rest_exception_handler',
     # 'DEFAULT_AUTHENTICATION_CLASSES': (
     #     'sahha_service.utils.middlewares.CustomJWTAuthentication',

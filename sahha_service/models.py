@@ -20,13 +20,13 @@ class AbstractModel(models.Model):
         abstract = True
 
 class SahhaUser(AbstractModel):
-    STUDENT = 'Student'
-    TEACHER = 'Teacher'
+    Worker = 'Worker'
+    Client = 'Client'
     MANAGER = 'Manager'
     SUPERVISOR = 'Supervisor'
     ROLE_CHOICES = (
-        (STUDENT, STUDENT),    # worker
-        (TEACHER, TEACHER),    # client
+        (Worker, Worker),    # worker
+        (Client, Client),    # client
         (MANAGER, MANAGER),    # manager
         (SUPERVISOR, SUPERVISOR),
     )
@@ -35,7 +35,7 @@ class SahhaUser(AbstractModel):
     django_user = models.OneToOneField(
         DjangoUser, on_delete=models.CASCADE, null=False, related_name='sahha_user')
     role = models.CharField(
-        max_length=120, default=STUDENT, choices=ROLE_CHOICES)
+        max_length=120, default=Worker, choices=ROLE_CHOICES)
     repr = "SahhaUser"
 
     def __str__(self):
