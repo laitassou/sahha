@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'rest_framework.authtoken',
 
 
     # Third-party
@@ -188,10 +189,13 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
         # "rest_framework_api_key.permissions.HasAPIKey",
     ],
-    #'DEFAULT_AUTHENTICATION_CLASSES': (
-    #    ...
-    #    'rest_framework_simplejwt.authentication.JWTAuthentication',
-    #)
+
+   #'DEFAULT_AUTHENTICATION_CLASSES': (
+   #    'rest_framework.authentication.TokenAuthentication',
+   #),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
     
     # 'EXCEPTION_HANDLER': 'sahha_service.utils.exception_handler.rest_exception_handler',
     # 'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -201,6 +205,11 @@ REST_FRAMEWORK = {
     #     'rest_framework.authentication.SessionAuthentication',
     #     'rest_framework.authentication.BasicAuthentication'
     # ),
+}
+
+JWT_AUTH = {
+    # Authorization:Token xxx
+    'JWT_AUTH_HEADER_PREFIX': 'Token',
 }
 
 SWAGGER_SETTINGS = {

@@ -12,6 +12,8 @@ from sahha_service.utils.helpers import logger
 import uuid
 from decimal import Decimal
 
+from sahha_service.apps.annonces.models import Annonces
+
 class AbstractModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
@@ -40,4 +42,3 @@ class SahhaUser(AbstractModel):
 
     def __str__(self):
         return '{}'.format(self.django_user)
-
