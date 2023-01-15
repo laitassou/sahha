@@ -16,6 +16,9 @@ from rest_framework import status
 from rest_framework import views
 from rest_framework.exceptions import ValidationError
 
+from rest_framework.authtoken.models import Token
+
+
 from sahha_service import models
 from sahha_service.utils.helpers import SahhaUserSecuredApiView, logger, dict_filter, dict_filter_validate
 from .serializers import (
@@ -103,7 +106,7 @@ class SignupView(SahhaUserSecuredApiView):
         }
         data['django_user']['username'] = data['django_user']['email'].lower()
         data['django_user']['email'] = data['django_user']['email'].lower()
-        data['django_user']['is_active'] = False
+        data['django_user']['is_active'] = True
         serializer = None
         if django_user and not django_user.is_active:
             serializer = SahhaUserSerializer(
@@ -144,9 +147,12 @@ class LoginView(generics.GenericAPIView):
                 django_user.username,
                 last_login
             )
+            token, _ = Token.objects.get_or_create(user=django_user)
+            data = SahhaUserSerializer(django_user.sahha_user).data
+            data['token'] = token.key
 
             return response.Response(
-                SahhaUserSerializer(django_user.sahha_user).data, status=status.HTTP_200_OK
+                data, status=status.HTTP_200_OK
             )
         return response.Response(
             {'error': 'Email address or password is incorrect.'},

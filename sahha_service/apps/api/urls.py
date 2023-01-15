@@ -25,6 +25,11 @@ from sahha_service.apps.users.views import (
     UserView,
 )
 
+from sahha_service.apps.annonces.views import (
+    AnnoncesListView,
+    AnnonceDetailApiView,
+)
+
 router = routers.DefaultRouter()
 
 # router.register('client', ClientViewSet, basename='client')
@@ -42,6 +47,11 @@ urlpatterns = [
 
     # User
     path('user/', UserView.as_view(), name='user-details'),
+
+    #Annonces
+     path('annonce/', AnnoncesListView.as_view(), name='user-details'),
+    path('annonce/<int:ads_id>/', AnnonceDetailApiView.as_view()),
+
 
     # Router
     path('', include(router.urls)),
