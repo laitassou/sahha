@@ -48,8 +48,10 @@ urlpatterns = [
     # User
     path('user/', UserView.as_view(), name='user-details'),
 
-    #Annonces
-     path('annonce/', AnnoncesListView.as_view(), name='user-details'),
+    # Annonces
+    path('annonces/', AnnoncesListView.as_view(), name='user-details'),
+
+    # Single annonce
     path('annonce/<int:ads_id>/', AnnonceDetailApiView.as_view()),
 
 

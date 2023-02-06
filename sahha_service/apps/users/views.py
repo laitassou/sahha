@@ -63,9 +63,10 @@ class SignupView(SahhaUserSecuredApiView):
                 'password': Schema(type=TYPE_STRING, description='Password'),
                 'confirm_password': Schema(type=TYPE_STRING, description='The same password again'),
                 'role': Schema(type=TYPE_STRING, description='RoleID'),
+                'phone_number': Schema(type=TYPE_STRING, description='Phone number'),
             },
             required=['first_name', 'last_name', 'email',
-                      'password', 'confirm_password', 'role']
+                      'password', 'confirm_password', 'role', 'phone_number']
         ),
         responses={
             status.HTTP_409_CONFLICT: 'Email already exists',

@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import Annonces
+from .models import Annonce
 
-class AnnoncesSerializer(serializers.ModelSerializer):
+class AnnonceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Annonces
-        fields = ["title", "description", "created", "updated", "user"]
+        model = Annonce
+        fields = ["id", "title", "description", "created", "updated", "user", "based_category"]

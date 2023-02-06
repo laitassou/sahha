@@ -12,7 +12,7 @@ from sahha_service.utils.helpers import logger
 import uuid
 from decimal import Decimal
 
-from sahha_service.apps.annonces.models import Annonces
+from sahha_service.apps.annonces.models import Annonce
 
 class AbstractModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
