@@ -28,6 +28,8 @@ from sahha_service.apps.users.views import (
 from sahha_service.apps.annonces.views import (
     AnnoncesListView,
     AnnonceDetailApiView,
+    CategoryListView,
+    AgencesListView,
 )
 
 router = routers.DefaultRouter()
@@ -37,24 +39,21 @@ router = routers.DefaultRouter()
 
 # Main API URLS
 urlpatterns = [
-
     # Registartion
-    path('user/signup/', SignupView.as_view(), name='auth-signup'),
-
+    path("user/signup/", SignupView.as_view(), name="auth-signup"),
     # Login
-    path('user/login/', LoginView.as_view(), name='auth-login'),
-    path('user/logout/', LogoutView.as_view(), name='auth-logout'),
-
+    path("user/login/", LoginView.as_view(), name="auth-login"),
+    path("user/logout/", LogoutView.as_view(), name="auth-logout"),
     # User
-    path('user/', UserView.as_view(), name='user-details'),
-
+    path("user/", UserView.as_view(), name="user-details"),
     # Annonces
-    path('annonces/', AnnoncesListView.as_view(), name='user-details'),
-
+    path("annonces/", AnnoncesListView.as_view(), name="user-details"),
     # Single annonce
-    path('annonce/<int:ads_id>/', AnnonceDetailApiView.as_view()),
-
-
+    path("annonce/<int:ads_id>/", AnnonceDetailApiView.as_view()),
+    # Category
+    path("categories/", CategoryListView.as_view()),
+    # Agences
+    path("agences/", AgencesListView.as_view()),
     # Router
-    path('', include(router.urls)),
+    path("", include(router.urls)),
 ]
