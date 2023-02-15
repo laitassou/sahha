@@ -60,7 +60,9 @@ class AnnonceDetailApiView(APIView):
         Helper method to get the object with given ads_id, and user_id
         """
         try:
-            return Annonce.objects.get(id=ads_id, user=user_id)
+            data = Annonce.objects.filter(id=ads_id, user=user_id)
+            print("data", data)
+            return data
         except Annonce.DoesNotExist:
             return None
 
@@ -116,20 +118,18 @@ class AnnonceDetailApiView(APIView):
         return Response({"res": "Object deleted!"}, status=status.HTTP_200_OK)
 
 
-class SlotView(APIView):
+class SlotListView(APIView):
     # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
 
     # 1. List all
-    def get(self, request, *args, **kwargs):
+    def get(self, request, ads_id, *args, **kwargs):
         """
         List all items for given requested user
         """
         print("laa request:", request)
-        slots = TimeSlot.objects.filter(
-            user=request.user.id, annonce_id=request.annonce.id
-        )
+        slots = TimeSlot.objects.all().select_related("annonce_id")
         serializer = SlotSerializer(slots, many=True)
         print("serializer.data:", serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)

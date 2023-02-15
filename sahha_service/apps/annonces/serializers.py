@@ -28,7 +28,7 @@ class AgenceSerializer(serializers.ModelSerializer):
         fields = ["id", "city", "name", "address"]
 
 
-class SlotSerializer:
+class SlotSerializer((serializers.ModelSerializer)):
     class Meta:
         model = TimeSlot
         fields = [
@@ -36,6 +36,8 @@ class SlotSerializer:
             "annonce_id",
             "description",
             "created",
-            "updated",
+            "start_time",
+            "end_time",
             "is_periodic",
+            "periodicity"
         ]

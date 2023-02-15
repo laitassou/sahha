@@ -51,8 +51,8 @@ class Annonce(models.Model):
 
     addresse = models.CharField(max_length=200, blank=True, default="")
 
-    gps_latitude = models.FloatField(null=True)
-    gps_longitude = models.FloatField(null=True)
+    gps_latitude = models.FloatField(null=True, default=0)
+    gps_longitude = models.FloatField(null=True, default=0)
 
     is_validated = models.BooleanField(default=False)
     is_paid = models.BooleanField(default=False)
@@ -65,8 +65,8 @@ class Annonce(models.Model):
 
 
 class TimeSlot(models.Model):
-    Daily = "Day"
-    Weekly = "Week"
+    Daily = "Jour"
+    Weekly = "Semaine"
     CHOICES = (
         (Daily, Daily),
         (Weekly, Weekly),
@@ -79,6 +79,8 @@ class TimeSlot(models.Model):
     end_time = models.DateTimeField(null=False)
     is_periodic = models.BooleanField(default=False)
     periodicity = models.SmallIntegerField(choices=CHOICES)
+    periodicity = models.CharField(
+        max_length=120, default=Weekly, choices=CHOICES)
 
     class Meta:
         unique_together = ("annonce_id", "start_time", "end_time")
