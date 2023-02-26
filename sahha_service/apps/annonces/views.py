@@ -128,24 +128,26 @@ class SlotListView(APIView):
         """
         List all items for given requested user
         """
-        print("laa request:", request)
         slots = TimeSlot.objects.all().select_related("annonce_id")
         serializer = SlotSerializer(slots, many=True)
         print("serializer.data:", serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # 2. Create
-    def post(self, request, *args, **kwargs):
+    def post(self, request, ads_id,  *args, **kwargs):
         """
         Create slot with given data
         """
-        print("la post request:", request)
+        print("la post request:", request, ads_id, request.user)
         data = {
-            "annonce_id": request.annonce.id,
+            "annonce_id": ads_id,
             "description": request.data.get("description"),
+            "start_time": request.data.get("start_time"),
+            "end_time": request.data.get("end_time"),
             "user": request.user.id,
         }
-        serializer = SlotSerializer(data=data)
+        serializer = SlotSerializer(data=data, partial=True)
+        print("la serializer:", serializer)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

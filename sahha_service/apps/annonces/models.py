@@ -73,12 +73,11 @@ class TimeSlot(models.Model):
     )
     annonce_id = models.ForeignKey(Annonce, on_delete=models.CASCADE)
     description = models.CharField(max_length=100, blank=True, default="")
-    time_slot_owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    time_slot_intervenant = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created = models.DateTimeField(auto_now_add=True)
     start_time = models.DateTimeField(null=False)
     end_time = models.DateTimeField(null=False)
     is_periodic = models.BooleanField(default=False)
-    periodicity = models.SmallIntegerField(choices=CHOICES)
     periodicity = models.CharField(
         max_length=120, default=Weekly, choices=CHOICES)
 

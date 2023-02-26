@@ -1,6 +1,7 @@
 class GENERAL:
     PAGE_SIZE = 5
-    DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
+    #DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
+    DATETIME_FORMAT = "%Y/%m/%d %H:%M:%S"
     DATE_FORMAT = "%d/%m/%Y"
     FROM_EMAIL = 'Do not Reply <do_not_reply@gmail.com>'
 
