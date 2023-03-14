@@ -61,7 +61,6 @@ class AnnonceDetailApiView(APIView):
         """
         try:
             data = Annonce.objects.filter(id=ads_id, user=user_id)
-            print("data", data)
             return data
         except Annonce.DoesNotExist:
             return None
@@ -128,9 +127,8 @@ class SlotListView(APIView):
         """
         List all items for given requested user
         """
-        slots = TimeSlot.objects.all().select_related("annonce_id")
+        slots = TimeSlot.objects.filter(annonce_id=ads_id,)
         serializer = SlotSerializer(slots, many=True)
-        print("serializer.data:", serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # 2. Create
