@@ -50,6 +50,7 @@ class SignupView(SahhaUserSecuredApiView):
             "first_name": TYPE_STRING,
             "last_name": TYPE_STRING,
             "email": TYPE_STRING,
+            'phone_number': TYPE_STRING,
         }
     }
 
@@ -80,7 +81,7 @@ class SignupView(SahhaUserSecuredApiView):
         """
         data = dict_filter_validate(
             request.data, ['email', 'first_name', 'last_name',
-                           'password', 'confirm_password', 'role']
+                           'password', 'confirm_password', 'role', 'phone_number']
         )
         django_user = models.DjangoUser.objects.filter(
             username=data['email'].lower()).first()
@@ -108,6 +109,7 @@ class SignupView(SahhaUserSecuredApiView):
         data['django_user']['username'] = data['django_user']['email'].lower()
         data['django_user']['email'] = data['django_user']['email'].lower()
         data['django_user']['is_active'] = True
+
         serializer = None
         if django_user and not django_user.is_active:
             serializer = SahhaUserSerializer(
