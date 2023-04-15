@@ -129,6 +129,7 @@ class SlotListView(APIView):
         """
         slots = TimeSlot.objects.filter(annonce_id=ads_id,)
         serializer = SlotSerializer(slots, many=True)
+        print("laa slots:", serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # 2. Create

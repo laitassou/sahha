@@ -64,10 +64,11 @@ class SignupView(SahhaUserSecuredApiView):
                 'password': Schema(type=TYPE_STRING, description='Password'),
                 'confirm_password': Schema(type=TYPE_STRING, description='The same password again'),
                 'role': Schema(type=TYPE_STRING, description='RoleID'),
+                'agence_id': Schema(type=TYPE_STRING, description='agence_id'),
                 'phone_number': Schema(type=TYPE_STRING, description='Phone number'),
             },
             required=['first_name', 'last_name', 'email',
-                      'password', 'confirm_password', 'role', 'phone_number']
+                      'password', 'confirm_password', 'role', 'agence_id', 'phone_number']
         ),
         responses={
             status.HTTP_409_CONFLICT: 'Email already exists',
@@ -81,7 +82,7 @@ class SignupView(SahhaUserSecuredApiView):
         """
         data = dict_filter_validate(
             request.data, ['email', 'first_name', 'last_name',
-                           'password', 'confirm_password', 'role', 'phone_number']
+                           'password', 'confirm_password', 'role','agence_id',  'phone_number']
         )
         django_user = models.DjangoUser.objects.filter(
             username=data['email'].lower()).first()

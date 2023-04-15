@@ -12,7 +12,7 @@ from sahha_service.utils.helpers import logger
 import uuid
 from decimal import Decimal
 
-from sahha_service.apps.annonces.models import Annonce
+from sahha_service.apps.annonces.models import Annonce, Agence
 
 class AbstractModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -38,6 +38,11 @@ class SahhaUser(AbstractModel):
         DjangoUser, on_delete=models.CASCADE, null=False, related_name='sahha_user')
     role = models.CharField(
         max_length=120, default=Worker, choices=ROLE_CHOICES)
+
+    agence_id = models.ForeignKey(
+        Agence, related_name="agence", on_delete=models.CASCADE, default="", null=True
+    )
+
     repr = "SahhaUser"
 
     def __str__(self):
