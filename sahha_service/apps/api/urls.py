@@ -23,6 +23,7 @@ from sahha_service.apps.users.views import (
     LoginView,
     LogoutView,
     UserView,
+    UsersListView,
 )
 
 from sahha_service.apps.annonces.views import (
@@ -31,6 +32,7 @@ from sahha_service.apps.annonces.views import (
     CategoryListView,
     AgencesListView,
     SlotListView,
+    SlotView,
 )
 
 router = routers.DefaultRouter()
@@ -49,6 +51,7 @@ urlpatterns = [
     path("user/", UserView.as_view(), name="user-details"),
     # Annonces
     path("annonces/", AnnoncesListView.as_view(), name="user-details"),
+    path("annonces/<int:user_id>/", AnnoncesListView.as_view(), name="user-details"),
     # Single annonce
     path("annonce/<int:ads_id>/", AnnonceDetailApiView.as_view()),
     # Category
@@ -58,6 +61,11 @@ urlpatterns = [
 
     #Slots
     path("slots/<int:ads_id>/", SlotListView.as_view()),
+    #update slot
+    path("slot/<int:slot_id>/annonce/<int:ads_id>/worker/<int:worker_id>/", SlotView.as_view()),
+
+    # Manager
+    path("users/<slug:type>/",    UsersListView.as_view()),
 
     # Router
     path("", include(router.urls)),

@@ -73,9 +73,10 @@ class SahhaUserSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):           
         response = serializers.ModelSerializer.to_representation(self, instance)
         django_user_info = response.pop('django_user')
+        response['django_id'] = django_user_info['id']
         response['first_name'] = django_user_info['first_name']
         response['last_name'] = django_user_info['last_name']
-        response['email'] = django_user_info['email']
+        response['email_address'] = django_user_info['email']
         return response
 
 # ========================

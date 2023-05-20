@@ -6,6 +6,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
 from .models import Annonce, TimeSlot, Categorie, Agence
+
+from ...models import SahhaUser
+from ..users.serializers import SahhaUserSerializer
+
+
 from .serializers import (
     AnnonceSerializer,
     CategorySerializer,
@@ -23,14 +28,30 @@ class AnnoncesListView(APIView):
     authentication_classes = (TokenAuthentication,)
 
     # 1. List all
-    def get(self, request, *args, **kwargs):
+    def get(self, request, user_id=None, *args, **kwargs):
         """
         List all items for given requested user
         """
-        annonces = Annonce.objects.filter(user=request.user.id)
-        serializer = AnnonceSerializer(annonces, many=True)
-        ##print("serializer.data:", serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        if user_id is not None:
+            manager = SahhaUser.objects.get(django_user=request.user)
+
+            manager_serializer = SahhaUserSerializer(manager)
+            role = manager_serializer.data.get('role', None)
+            agence = manager_serializer.data.get('agence_id', None)
+
+            if role != 'Manager':
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            
+            annonces = Annonce.objects.filter(user=user_id)
+            serializer = AnnonceSerializer(annonces, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)            
+
+        else:            
+            annonces = Annonce.objects.filter(user=request.user.id)
+            serializer = AnnonceSerializer(annonces, many=True)
+            ##print("serializer.data:", serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     # 2. Create
     def post(self, request, *args, **kwargs):
@@ -83,12 +104,12 @@ class AnnonceDetailApiView(APIView):
     # 4. Update
     def put(self, request, ads_id, *args, **kwargs):
         """
-        Updates the todo item with given todo_id if exists
+        Updates the annonce item with given a if exists
         """
         ads_instance = self.get_object(ads_id, request.user.id)
         if not ads_instance:
             return Response(
-                {"res": "Object with todo id does not exists"},
+                {"res": "Object with ads_id does not exists"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         data = {
@@ -105,12 +126,12 @@ class AnnonceDetailApiView(APIView):
     # 5. Delete
     def delete(self, request, ads_id, *args, **kwargs):
         """
-        Deletes the todo item with given todo_id if exists
+        Deletes the annonce item with given ads_id if exists
         """
         ads_instance = self.get_object(ads_id, request.user.id)
         if not ads_instance:
             return Response(
-                {"res": "Object with todo id does not exists"},
+                {"res": "Object with ads_id does not exists"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         ads_instance.delete()
@@ -127,17 +148,21 @@ class SlotListView(APIView):
         """
         List all items for given requested user
         """
-        slots = TimeSlot.objects.filter(annonce_id=ads_id,)
+        annonce = Annonce.objects.filter(id=ads_id,)
+        ads_serializer = AnnonceSerializer(annonce, many=True)
+        ads = ads_serializer.data
+        slots = TimeSlot.objects.filter(annonce_id=ads_id,).select_related('time_slot_intervenant')
         serializer = SlotSerializer(slots, many=True)
-        print("laa slots:", serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        #add ads in first position
+        data = serializer.data
+        data.append(ads)
+        return Response(data, status=status.HTTP_200_OK)
 
     # 2. Create
     def post(self, request, ads_id,  *args, **kwargs):
         """
         Create slot with given data
         """
-        print("la post request:", request, ads_id, request.user)
         data = {
             "annonce_id": ads_id,
             "description": request.data.get("description"),
@@ -146,11 +171,92 @@ class SlotListView(APIView):
             "user": request.user.id,
         }
         serializer = SlotSerializer(data=data, partial=True)
-        print("la serializer:", serializer)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    # 3. Update
+    def put(self, request, ads_id, *args, **kwargs):
+        """
+        Updates the slot item with given ads_id if exists
+        """
+        ads_instance = self.get_object(ads_id, request.user.id)
+        if not ads_instance:
+            return Response(
+                {"res": "Object with ads_id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        data = {
+            "intervenant_id": request.data.get("intervenant_id"),
+            "updated": request.data.get("updated"),
+
+        }
+        serializer = SlotSerializer(instance=ads_instance, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SlotView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+
+    def get_object(self, slot_id):
+        """
+        Helper method to get the object with given ads_id
+        """
+        try:
+            data = TimeSlot.objects.filter(id=slot_id,)
+            return data
+        except TimeSlot.DoesNotExist:
+            return None
+        
+    # 1. get
+    def get(self, request, slot_id, *args, **kwargs):
+        """
+        Get given slot for given requested user
+        """
+        slot = TimeSlot.objects.filter(id=slot_id,)
+        serializer = SlotSerializer(slot, many=True)
+        data = serializer.data
+        return Response(data, status=status.HTTP_200_OK)
+
+
+
+    # 2. Update
+    def put(self, request, slot_id, ads_id, worker_id, *args, **kwargs):
+        """
+        Updates the slot item with given slot_id if exists
+        """
+
+    
+        user = SahhaUser.objects.get(django_user=request.user)
+
+        serializer = SahhaUserSerializer(user)
+        role = serializer.data.get('role', None)
+
+        if role is None or  role != SahhaUser.MANAGER:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        slot_instance = TimeSlot.objects.get(id=slot_id,annonce_id=ads_id)
+        
+        if not slot_instance:
+            return Response(
+                {"res": "Object with  slot_id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        data = {
+            "time_slot_intervenant": worker_id,
+        }
+        serializer = SlotSerializer(instance=slot_instance, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

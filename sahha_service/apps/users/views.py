@@ -17,6 +17,9 @@ from rest_framework import views
 from rest_framework.exceptions import ValidationError
 
 from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.response import Response
 
 
 from sahha_service import models
@@ -204,3 +207,36 @@ class UserView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+    
+
+# List users belonging to given agency
+class UsersListView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+
+    # 1. List all
+    def get(self, request, type, *args, **kwargs):
+        """
+        List all users belonging to same agency as manager
+        """
+
+        user = models.SahhaUser.objects.get(django_user=request.user)
+
+        serializer = SahhaUserSerializer(user)
+        role = serializer.data.get('role', None)
+        agence = serializer.data.get('agence_id', None)
+
+        if role and role == models.SahhaUser.MANAGER:
+            if type == models.SahhaUser.Client:
+                clients = models.SahhaUser.objects.filter(agence_id=agence, role=models.SahhaUser.Client)
+                cl_serializer = SahhaUserSerializer(clients, many=True)
+                return Response(cl_serializer.data, status=status.HTTP_200_OK)
+            elif type == models.SahhaUser.Worker:
+                workers = models.SahhaUser.objects.filter(agence_id=agence, role=models.SahhaUser.Worker)
+                cl_serializer = SahhaUserSerializer(workers, many=True)
+                return Response(cl_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"invalid type"}, status=status.HTTP_403_FORBIDDEN)                                
+        else:
+            return Response({"Not manager"}, status=status.HTTP_403_FORBIDDEN)
