@@ -61,6 +61,7 @@ class AnnoncesListView(APIView):
         data = {
             "title": request.data.get("title"),
             "description": request.data.get("description"),
+            "addresse": request.data.get("address"),
             "user": request.user.id,
         }
         serializer = AnnonceSerializer(data=data)

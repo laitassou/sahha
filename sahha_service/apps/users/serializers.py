@@ -16,6 +16,8 @@ from django.contrib.auth.models import User as DjangoUser
 
 from sahha_service import models
 
+from ..annonces.models import Agence
+
 # ========================
 # DjangoUser
 # ========================
@@ -49,13 +51,22 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'username'
         )
+
+class AgenceAllSerializer(serializers.ModelSerializer):
+
+    #manager = DjangoUserSerializer()
+    class Meta:
+        model = Agence
+        fields ="__all__"
+
 # ========================
 # SahhaUser
 # ========================
 class SahhaUserSerializer(serializers.ModelSerializer):    
     django_user = DjangoUserSerializer()
     # tag = RoleSerializer(read_only=True, many=True)
-    
+    agence_id = AgenceAllSerializer()
+
     class Meta:
         model = models.SahhaUser
         fields = '__all__'
@@ -77,6 +88,13 @@ class SahhaUserSerializer(serializers.ModelSerializer):
         response['first_name'] = django_user_info['first_name']
         response['last_name'] = django_user_info['last_name']
         response['email_address'] = django_user_info['email']
+        agence_info = response.pop('agence_id')
+        response['agence_id'] = agence_info['id']
+        response['agence_name'] = agence_info['name']
+        response['agence_city'] = agence_info['city']
+        response['agence_phone'] = agence_info['phone_number']
+        response['agence_address'] = agence_info['address']
+
         return response
 
 # ========================

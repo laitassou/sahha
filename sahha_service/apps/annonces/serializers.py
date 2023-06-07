@@ -14,6 +14,7 @@ class AnnonceSerializer(serializers.ModelSerializer):
             "description",
             "created",
             "updated",
+            "addresse",
             "user",
             "based_category",
         ]
@@ -54,5 +55,4 @@ class SlotSerializer((serializers.ModelSerializer)):
         if instance.time_slot_intervenant is not None:
             user = SahhaUser.objects.get(django_user=instance.time_slot_intervenant)
             rep["intervenant"] = SahhaUserSerializer(user).data
-        print("laa to_representation", rep)
         return rep
