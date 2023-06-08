@@ -62,16 +62,18 @@ class AgenceAllSerializer(serializers.ModelSerializer):
 # ========================
 # SahhaUser
 # ========================
-class SahhaUserSerializer(serializers.ModelSerializer):    
+class SahhaUserSerializer(serializers.ModelSerializer):
+
     django_user = DjangoUserSerializer()
-    # tag = RoleSerializer(read_only=True, many=True)
-    agence_id = AgenceAllSerializer()
+
+    ##agence_id = AgenceAllSerializer()
 
     class Meta:
         model = models.SahhaUser
         fields = '__all__'
 
     def create(self, validated_data):
+
         django_user = DjangoUserSerializer().create(
             {**validated_data.pop('django_user')})
         return super().create({'django_user': django_user, **validated_data})
@@ -81,19 +83,24 @@ class SahhaUserSerializer(serializers.ModelSerializer):
             instance.django_user, validated_data.pop('django_user', {}))
         return super().update(instance, {**validated_data, 'django_user': django_user})
 
-    def to_representation(self, instance):           
+    def to_representation(self, instance):
         response = serializers.ModelSerializer.to_representation(self, instance)
         django_user_info = response.pop('django_user')
         response['django_id'] = django_user_info['id']
         response['first_name'] = django_user_info['first_name']
         response['last_name'] = django_user_info['last_name']
         response['email_address'] = django_user_info['email']
-        agence_info = response.pop('agence_id')
-        response['agence_id'] = agence_info['id']
-        response['agence_name'] = agence_info['name']
-        response['agence_city'] = agence_info['city']
-        response['agence_phone'] = agence_info['phone_number']
-        response['agence_address'] = agence_info['address']
+        agence_id = response.pop('agence_id')
+        agence = models.Agence.objects.filter(
+            id=agence_id).first()
+        agence_info = AgenceAllSerializer(agence)
+        agence_data = agence_info.data
+
+        response['agence_id'] = agence_data['id']
+        response['agence_name'] = agence_data['name']
+        response['agence_city'] = agence_data['city']
+        response['agence_phone'] = agence_data['phone_number']
+        response['agence_address'] = agence_data['address']
 
         return response
 

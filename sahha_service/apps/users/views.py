@@ -31,6 +31,7 @@ from .serializers import (
     LoginSerializer,
     UserSerializer,
     LogoutViewSerializer,
+    AgenceAllSerializer,
 )
 
 from drf_yasg.utils import swagger_auto_schema
@@ -123,6 +124,7 @@ class SignupView(SahhaUserSecuredApiView):
             )
         else:
             serializer = SahhaUserSerializer(data=data)
+
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
