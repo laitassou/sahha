@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Annonce, Categorie, Agence, TimeSlot
+from .models import Annonce, Categorie, Agence, TimeSlot, Intervention
 
 from ..users.serializers import SahhaUserSerializer
 from ...models import SahhaUser
@@ -56,3 +56,9 @@ class SlotSerializer((serializers.ModelSerializer)):
             user = SahhaUser.objects.get(django_user=instance.time_slot_intervenant)
             rep["intervenant"] = SahhaUserSerializer(user).data
         return rep
+
+
+class InterventionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Intervention
+        fields = "__all__"

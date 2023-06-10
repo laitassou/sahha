@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
-from .models import Annonce, TimeSlot, Categorie, Agence
+from .models import Annonce, TimeSlot, Categorie, Agence, Intervention
 
 from ...models import SahhaUser
 from ..users.serializers import SahhaUserSerializer
@@ -16,7 +16,9 @@ from .serializers import (
     CategorySerializer,
     AgenceSerializer,
     SlotSerializer,
+    InterventionSerializer,
 )
+
 from rest_framework import permissions
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication
@@ -295,3 +297,84 @@ class AgencesListView(APIView):
         serializer = AgenceSerializer(agences, many=True)
         ##print("serializer.data:", serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+class InterventionView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+
+    def get_object(self, slot_id):
+        """
+        Helper method to get the object with given ads_id
+        """
+        try:
+            data = Intervention.objects.filter(id=slot_id,)
+            return data
+        except TimeSlot.DoesNotExist:
+            return None
+        
+    # 1. get
+    def get(self, request, slot_id, worker_id, *args, **kwargs):
+        """
+        Get given slot for given requested user
+        """
+        slot = Intervention.objects.filter(id=worker_id,)
+        serializer = SlotSerializer(slot, many=True)
+        data = serializer.data
+        return Response(data, status=status.HTTP_200_OK)
+
+
+
+
+    # 3. create
+    def post(self, request, slot_id, worker_id, *args, **kwargs):
+        """
+        Updates the slot item with given slot_id if exists
+        """
+
+        user = SahhaUser.objects.get(django_user=request.user)
+
+        serializer = SahhaUserSerializer(user)
+        role = serializer.data.get('role', None)
+        if role is None or  role != SahhaUser.Client:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+        slot_instance = TimeSlot.objects.get(id=slot_id)
+        if not slot_instance:
+            return Response(
+                {"res": "Object with  slot_id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        slot_serializer = SlotSerializer(slot_instance)
+        data = slot_serializer.data
+        id = data.get('intervenant', {}).get('id')
+        django_id = data.get('intervenant', {}).get('django_id')
+
+        print("laa data", data)
+       
+        if id != worker_id:
+            return Response(
+                {"res": "Bad worker id"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+                    
+        
+        data = {
+            "slot_id": slot_id,
+            "intervenant": django_id,
+            "reporting": request.data.get("feedback"),
+            "score": request.data.get("score"),
+            "done": True,
+
+        }
+        serializer = InterventionSerializer(data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

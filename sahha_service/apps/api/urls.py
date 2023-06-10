@@ -33,6 +33,7 @@ from sahha_service.apps.annonces.views import (
     AgencesListView,
     SlotListView,
     SlotView,
+    InterventionView,
 )
 
 router = routers.DefaultRouter()
@@ -63,6 +64,9 @@ urlpatterns = [
     path("slots/<int:ads_id>/", SlotListView.as_view()),
     #update slot
     path("slot/<int:slot_id>/annonce/<int:ads_id>/worker/<int:worker_id>/", SlotView.as_view()),
+
+    #feedback
+    path("feedback/<int:slot_id>/<int:worker_id>", InterventionView.as_view()),
 
     # Manager
     path("users/<slug:type>/",    UsersListView.as_view()),
