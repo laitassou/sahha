@@ -17,6 +17,7 @@ from .serializers import (
     AgenceSerializer,
     SlotSerializer,
     InterventionSerializer,
+    SlotAdsSerializer,
 )
 
 from rest_framework import permissions
@@ -261,6 +262,24 @@ class SlotView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SlotListPerWorkerView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+
+    # 1. List all
+    def get(self, request, worker_id, *args, **kwargs):
+        """
+        List all items for given worker
+        """
+        slots = TimeSlot.objects.filter(time_slot_intervenant=worker_id)
+        serializer = SlotAdsSerializer(slots, many=True)
+        #add ads in first position
+        data = serializer.data
+        return Response(data, status=status.HTTP_200_OK)
+    
 
 
 class CategoryListView(APIView):
